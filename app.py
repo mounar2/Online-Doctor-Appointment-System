@@ -87,14 +87,14 @@ def login_required(role=None):
 @app.route("/about")
 def about_page():
     return render_template("about.html")
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
-
 @app.route("/contact", methods=["GET", "POST"])
 def contact_page():
-    messages = load_json(MESSAGES_FILE)  # تعريف messages دائماً قبل أي شيء
+    messages = load_json(MESSAGES_FILE)
     success_msg = None
 
     if request.method == "POST":
@@ -117,8 +117,6 @@ def contact_page():
 
     return render_template("contact.html", success_msg=success_msg)
 
-
-
 # ------------------------------
 # LOGIN & REGISTER
 # ------------------------------
@@ -126,39 +124,48 @@ def contact_page():
 def login_page():
     if request.method == "GET":
         return render_template("login.html")
+
     email = request.form.get("email")
     password = request.form.get("password")
+
     user = find_user_by_email(email)
     if not user or not check_password_hash(user["password_hash"], password):
         flash("Invalid credentials", "danger")
         return redirect(url_for("login_page"))
+
     session["user_id"] = user["id"]
     session["role"] = user["role"]
     session["name"] = user["name"]
+
     if user["role"] == "patient":
         return redirect(url_for("patient_dashboard"))
     if user["role"] == "doctor":
         return redirect(url_for("doctor_dashboard"))
     if user["role"] == "admin":
         return redirect(url_for("admin_dashboard"))
+
     return redirect(url_for("index"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register_page():
     if request.method == "GET":
         return render_template("register.html")
+
     name = request.form.get("name")
     email = request.form.get("email")
     password = request.form.get("password")
     role = request.form.get("role")
     phone = request.form.get("phone", "")
     specialty = request.form.get("specialty", "") if role == "doctor" else ""
+
     if not password or len(password) < 6:
         flash("Password must be at least 6 characters.", "warning")
         return redirect(url_for("register_page"))
+
     if find_user_by_email(email):
         flash("Email already used.", "danger")
         return redirect(url_for("register_page"))
+
     new_user = {
         "id": str(uuid.uuid4()),
         "name": name,
@@ -168,9 +175,11 @@ def register_page():
         "specialty": specialty,
         "phone": phone
     }
+
     users = load_json(USERS_FILE)
     users.append(new_user)
     save_json(USERS_FILE, users)
+
     flash("Account created! Please login.", "success")
     return redirect(url_for("login_page"))
 
@@ -181,14 +190,16 @@ def logout():
     return redirect(url_for("index"))
 
 # ------------------------------
-# DASHBOARDS
+# PATIENT DASHBOARD
 # ------------------------------
 @app.route("/patient")
 @login_required(role="patient")
 def patient_dashboard():
-    my_id = session.get("user_id")
+    my_id = session["user_id"]
+
     appts = load_json(APPTS_FILE)
     users = load_json(USERS_FILE)
+
     my_appts = []
     for a in appts:
         if a.get("patient_id") == my_id:
@@ -201,28 +212,76 @@ def patient_dashboard():
                 "reason": a.get("reason"),
                 "status": a.get("status", "pending")
             })
-    doctors = [u for u in users if u.get("role") == "doctor"]
-    return render_template("patient_dashboard.html", doctors=doctors, appointments=my_appts)
 
+    doctors = [u for u in users if u["role"] == "doctor"]
+
+    return render_template(
+        "patient_dashboard.html",
+        doctors=doctors,
+        appointments=my_appts,
+        patient_name=session.get("name")
+    )
+
+# ------------------------------
+# ** NEW: BOOK APPOINTMENT **
+# ------------------------------
+@app.route("/book_appointment", methods=["POST"])
+@login_required(role="patient")
+def book_appointment():
+    data = request.get_json()
+
+    doctor_id = data.get("doctor_id")
+    date = data.get("date")
+    reason = data.get("reason")
+
+    if not doctor_id or not date:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    appts = load_json(APPTS_FILE)
+
+    new_appt = {
+        "id": str(uuid.uuid4()),
+        "patient_id": session["user_id"],
+        "doctor_id": doctor_id,
+        "date": date,
+        "reason": reason,
+        "status": "pending"
+    }
+
+    appts.append(new_appt)
+    save_json(APPTS_FILE, appts)
+
+    return jsonify({"message": "Appointment booked successfully!"}), 200
+
+# ------------------------------
+# DOCTOR DASHBOARD
+# ------------------------------
 @app.route("/doctor")
 @login_required(role="doctor")
 def doctor_dashboard():
     my_id = session["user_id"]
     appts = load_json(APPTS_FILE)
+
     my_appts = [a for a in appts if a["doctor_id"] == my_id]
     for a in my_appts:
         a["patient"] = find_user_by_id(a["patient_id"])
+
     return render_template("doctor_dashboard.html", appointments=my_appts)
 
+# ------------------------------
+# ADMIN DASHBOARD
+# ------------------------------
 @app.route("/admin")
 @login_required(role="admin")
 def admin_dashboard():
     users = load_json(USERS_FILE)
     appts = load_json(APPTS_FILE)
     messages = load_json(MESSAGES_FILE)
+
     for a in appts:
         a["patient"] = find_user_by_id(a["patient_id"])
         a["doctor"] = find_user_by_id(a["doctor_id"])
+
     return render_template("admin_dashboard.html", users=users, appointments=appts, messages=messages)
 
 # ------------------------------
@@ -232,18 +291,22 @@ def admin_dashboard():
 @login_required(role="admin")
 def create_user():
     data = request.form
+
     name = data.get("name")
     email = data.get("email")
     password = data.get("password")
     role = data.get("role")
     phone = data.get("phone", "")
     specialty = data.get("specialty", "") if role == "doctor" else ""
+
     if not name or not email or not password or not role:
         flash("All fields are required.", "warning")
         return redirect(url_for("admin_dashboard"))
+
     if find_user_by_email(email):
         flash("Email already exists.", "danger")
         return redirect(url_for("admin_dashboard"))
+
     new_user = {
         "id": str(uuid.uuid4()),
         "name": name,
@@ -253,9 +316,11 @@ def create_user():
         "specialty": specialty,
         "phone": phone
     }
+
     users = load_json(USERS_FILE)
     users.append(new_user)
     save_json(USERS_FILE, users)
+
     flash(f"User {name} created successfully.", "success")
     return redirect(url_for("admin_dashboard"))
 
@@ -264,22 +329,30 @@ def create_user():
 def edit_user(user_id):
     users = load_json(USERS_FILE)
     user = find_user_by_id(user_id)
+
     if not user:
         flash("User not found.", "danger")
         return redirect(url_for("admin_dashboard"))
+
     data = request.form
+
     user["name"] = data.get("name", user["name"])
     user["email"] = data.get("email", user["email"])
-    password = data.get("password")
-    if password:
-        user["password_hash"] = generate_password_hash(password)
+    new_password = data.get("password")
+
+    if new_password:
+        user["password_hash"] = generate_password_hash(new_password)
+
     user["role"] = data.get("role", user["role"])
     user["phone"] = data.get("phone", user.get("phone", ""))
+
     if user["role"] == "doctor":
         user["specialty"] = data.get("specialty", user.get("specialty", ""))
     else:
         user["specialty"] = ""
+
     save_json(USERS_FILE, users)
+
     flash(f"User {user['name']} updated successfully.", "success")
     return redirect(url_for("admin_dashboard"))
 
@@ -288,11 +361,14 @@ def edit_user(user_id):
 def delete_user(user_id):
     users = load_json(USERS_FILE)
     user = find_user_by_id(user_id)
+
     if not user:
         flash("User not found.", "danger")
         return redirect(url_for("admin_dashboard"))
+
     users = [u for u in users if u["id"] != user_id]
     save_json(USERS_FILE, users)
+
     flash(f"User {user['name']} deleted successfully.", "success")
     return redirect(url_for("admin_dashboard"))
 
@@ -301,11 +377,14 @@ def delete_user(user_id):
 def delete_appointment(appt_id):
     appts = load_json(APPTS_FILE)
     appt = next((a for a in appts if a["id"] == appt_id), None)
+
     if not appt:
         flash("Appointment not found.", "danger")
         return redirect(url_for("admin_dashboard"))
+
     appts = [a for a in appts if a["id"] != appt_id]
     save_json(APPTS_FILE, appts)
+
     flash("Appointment deleted successfully.", "success")
     return redirect(url_for("admin_dashboard"))
 
@@ -316,3 +395,5 @@ ensure_admin_created()
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
