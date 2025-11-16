@@ -98,7 +98,7 @@ def index():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact_page():
-    messages = load_json(MESSAGES_FILE)  # تعريف messages دائماً قبل أي شيء
+    messages = load_json(MESSAGES_FILE)  
     success_msg = None
 
     if request.method == "POST":
@@ -320,3 +320,4 @@ ensure_admin_created()
 
 if __name__ == "__main__":
     app.run(debug=True)
+
