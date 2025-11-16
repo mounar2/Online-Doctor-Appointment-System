@@ -84,10 +84,6 @@ def login_required(role=None):
 # ------------------------------
 # ROUTES
 # ------------------------------
-##@app.route("/")
-##def index():
-  ##  return render_template("index.html")
-
 @app.route("/about")
 def about_page():
     return render_template("about.html")
@@ -98,7 +94,7 @@ def index():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact_page():
-    messages = load_json(MESSAGES_FILE)  
+    messages = load_json(MESSAGES_FILE)  # تعريف messages دائماً قبل أي شيء
     success_msg = None
 
     if request.method == "POST":
@@ -320,4 +316,3 @@ ensure_admin_created()
 
 if __name__ == "__main__":
     app.run(debug=True)
-
