@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact - MediLink</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='cardiogram.png') }}">
+<style>
+body {font-family: Arial, sans-serif; background: #f0f4f8; margin:0;}
+.container {width:100%; max-width:1200px; margin:auto;}
+.header {background:#2563eb; color:white; padding:20px 25px; display:flex; justify-content:space-between; align-items:center; border-radius:0 0 15px 15px;}
+.logo {font-size:1.6rem; font-weight:bold; display:flex; align-items:center; gap:10px;}
+.nav-links a {color:white; text-decoration:none; margin-left:20px; font-weight:500;}
+.nav-links a:hover {text-decoration:underline;}
+.contact-section {margin:60px auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:25px; padding:20px;}
+.contact-card {background:white; padding:25px; border-radius:14px; box-shadow:0 4px 15px rgba(0,0,0,0.1); text-align:center; transition:0.3s;}
+.contact-card:hover {transform:translateY(-5px); box-shadow:0 6px 20px rgba(0,0,0,0.12);}
+.contact-card i {font-size:2rem; color:#2563eb; margin-bottom:10px;}
+.contact-card h4 {margin-bottom:8px; color:#1e3a8a;}
+.contact-form {grid-column: span 2; background:white; padding:30px; border-radius:14px; box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+.contact-form input, .contact-form textarea {width:100%; padding:12px; border-radius:8px; border:1px solid #cbd5e1; background:#f8fafc; font-size:1rem;}
+.btn-primary {padding:10px; border-radius:10px; background:linear-gradient(135deg,#2563eb,#1d4ed8); border:none; color:white; font-weight:bold; cursor:pointer; transition:0.2s;}
+.btn-primary:hover {background:#1e40af;}
+.footer {margin-top:50px; padding:25px; background:#1e293b; color:white; text-align:center; border-radius:15px 15px 0 0;}
+.footer a {color:#cbd5e1; margin:0 10px; text-decoration:none;}
+.footer a:hover {color:white;}
+.flash-message {margin-top:10px; padding:10px; border-radius:8px; background:#10b981; color:white;}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo"><i class="fas fa-heartbeat"></i> MediLink</div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('about_page') }}">About</a>
+            <a href="{{ url_for('contact_page') }}">Contact</a>
+        </div>
+    </div>
+
+    <!-- CONTACT CARDS -->
+    <div class="contact-section">
+
+        <div class="contact-card">
+            <i class="fas fa-map-marker-alt"></i>
+            <h4>Our Address</h4>
+            <p>Algerie</p>
+        </div>
+
+        <div class="contact-card">
+            <i class="fas fa-phone-alt"></i>
+            <h4>Call Us</h4>
+            <p>+213 567 890</p>
+        </div>
+
+        <div class="contact-card">
+            <i class="fas fa-envelope"></i>
+            <h4>Email Us</h4>
+            <p>appointmentdoctor001@gmail.com</p>
+        </div>
+
+        <!-- FORM -->
+        <div class="contact-form">
+            <h3 style="color:#2563eb;">Send a Message</h3>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, msg in messages %}
+                  <div class="flash-message">{{ msg }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('contact_page') }}" style="margin-top:15px;">
+                <input type="text" name="name" placeholder="Your Name" required><br><br>
+                <input type="email" name="email" placeholder="Your Email" required><br><br>
+                <textarea name="message" placeholder="Your Message" rows="4" required></textarea><br><br>
+                <button type="submit" class="btn-primary">Send Message</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>&copy;  2025 MediLink. All rights reserved.</p>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+[
+    {
+        "id": "7fed5342-ce34-4ae5-adb0-8d19f14b406b",
+        "name": "Admin",
+        "email": "admin@example.com",
+        "password_hash": "scrypt:32768:8:1$xo4i2Ap6Sx5f3tqh$af9d089337b4edb988fe68f610a230d1d26d7d79facc1b397de623f946bf7f5f7ffdd5f567fec0251ba4d26cc6571ccc8372265ddd81660299f17af8bf9ae2ed",
+        "role": "admin",
+        "specialty": "",
+        "phone": ""
+    },
+    {
+        "id": "0ada28e7-7a37-48d9-8663-b2897ee8e44d",
+        "name": "mouna rahmoune",
+        "email": "rahmounemouna2@gmail.com",
+        "password_hash": "scrypt:32768:8:1$vNGmslNyLgDQ8UoQ$39bb7dd421c09b139b9d4a90bf11517257129078cdd46b2410c33d5e263b52ca5b0dbbef509f8e853d615f3487cd8587ec7fa5b9d311da5f44d43dbf56ccd44d",
+        "role": "patient",
+        "specialty": "",
+        "phone": "90028329382"
+    },
+    {
+        "id": "d284c536-dccf-406f-b283-c75941c02b4c",
+        "name": "aya bedjoui",
+        "email": "rahmounemouna1@gmail.com",
+        "password_hash": "scrypt:32768:8:1$NGd1AcD4XtOIYPrm$4930d4934ae399aa93a759214ea5d71b076330fad7fcb35600068cd3f378c8290f7efce3b10cedb9bd0c2c8cdfd5218dfd6277e0e75bc4fe7b794b378b5e5465",
+        "role": "doctor",
+        "specialty": "chirugiene",
+        "phone": "90028329382"
+    },
+    {
+        "id": "3bd5aa65-dd4e-4aef-96dd-d6ed041f6b76",
+        "name": "Dr linda",
+        "email": "rahmounemouna3@gmail.com",
+        "password_hash": "scrypt:32768:8:1$weiTVcblNKKGJ6qf$310ffa4e96dbe7268ae099005b4c93dc0cfbc25d4327fb6486107e82a37d6fba4674647a49d7a8a93f0988a41c702c235e3831a3038d98eaefe7b5bf847d2064",
+        "role": "doctor",
+        "specialty": "cardio",
+        "phone": "90028329382"
+    },
+    {
+        "id": "d1106836-cfd4-4ac2-8255-77dcf3641d72",
+        "name": "ahmed",
+        "email": "rahmounemouna4@gmail.com",
+        "password_hash": "scrypt:32768:8:1$qBArtEd3rXJKMuBN$4163a2798d19515328fd584a83dfb031e7d0d211dd4fc0cd76c21f8605a53a17b2dc57cae73524e5bc7a0e1260942a08a5a41564cd96c3b7bdea44a8b77d5854",
+        "role": "patient",
+        "specialty": "",
+        "phone": "90028329382"
+    }
+]

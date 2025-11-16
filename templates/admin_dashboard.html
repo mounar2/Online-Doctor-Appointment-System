@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediLink - Admin Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='cardiogram.png') }}">
+<style>
+:root {
+    --primary:#2563eb; --primary-dark:#1d4ed8;
+    --secondary:#64748b; --gray:#e2e8f0;
+    --dark:#1e293b; --light:#f8fafc;
+    --danger:#ef4444; --warning:#f59e0b; --success:#10b981;
+    --card-shadow:0 10px 25px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);min-height:100vh;color:var(--dark);}
+.container{max-width:1200px;margin:auto;padding:20px;}
+
+.header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.8rem;font-weight:700;color:var(--primary);}
+.logo i{font-size:2.2rem;}
+.nav-links{display:flex;gap:25px;}
+.nav-links a{color:var(--dark);text-decoration:none;font-weight:500;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:2px;background:var(--primary);transition:.3s;}
+.nav-links a:hover::after{width:100%;}
+
+.hero{
+    text-align:center;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:white;padding:40px 20px;border-radius:20px;margin-bottom:40px;box-shadow:var(--card-shadow);
+}
+.hero h1{font-size:2.4rem;margin-bottom:10px;}
+
+.card{
+    background:white;padding:25px;border-radius:16px;box-shadow:var(--card-shadow);
+    margin-bottom:40px;
+}
+
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+thead{background:var(--primary);color:white;}
+th,td{padding:12px;border-bottom:1px solid var(--gray);text-align:left;}
+
+.badge{padding:6px 10px;border-radius:8px;color:white;font-size:.9rem;}
+.bg-warning{background:var(--warning);}
+.bg-success{background:var(--success);}
+.bg-danger{background:var(--danger);}
+.bg-secondary{background:var(--secondary);}
+
+.btn{
+    border:none;padding:8px 14px;border-radius:8px;color:white;
+    cursor:pointer;font-size:.9rem;
+}
+.btn-success{background:var(--success);}
+.btn-danger{background:var(--danger);}
+.btn-primary{background:var(--primary);}
+.btn-success:hover{background:#0a986f;}
+.btn-danger:hover{background:#d93636;}
+.btn-primary:hover{background:#1d4ed8;}
+
+.footer{text-align:center;margin-top:60px;color:var(--secondary);}
+
+.modal{
+    display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);
+    justify-content:center;align-items:center;
+}
+.modal-content{
+    background:white;padding:20px;border-radius:12px;width:400px;max-width:90%;
+}
+.modal.active{display:flex;}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo"><i class="fas fa-heartbeat"></i> MediLink</div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('about_page') }}">About</a>
+            <a href="{{ url_for('contact_page') }}">Contact</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <h3 class="text-primary mb-3">Admin Dashboard</h3>
+
+    <!-- CREATE USER BUTTON -->
+    <button class="btn btn-primary" onclick="openModal()">+ Create New User</button>
+
+    <!-- CREATE USER MODAL -->
+    <div class="modal" id="createUserModal">
+        <div class="modal-content">
+            <h4>Create New User</h4>
+            <form method="POST" action="{{ url_for('create_user') }}">
+                <label>Name:</label><br>
+                <input type="text" name="name" required><br>
+                <label>Email:</label><br>
+                <input type="email" name="email" required><br>
+                <label>Password:</label><br>
+                <input type="password" name="password" required><br>
+                <label>Role:</label><br>
+                <select name="role" onchange="toggleSpecialty(this.value)">
+                    <option value="patient">Patient</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="admin">Admin</option>
+                </select><br>
+                <label>Phone:</label><br>
+                <input type="text" name="phone"><br>
+                <label id="specialtyLabel" style="display:none;">Specialty:</label><br>
+                <input type="text" name="specialty" id="specialtyInput" style="display:none;"><br><br>
+                <button type="submit" class="btn btn-success">Create</button>
+                <button type="button" class="btn btn-danger" onclick="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- USERS TABLE -->
+    <h5>All Users</h5>
+    <table>
+        <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Specialty</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.role }}</td>
+                <td>{{ u.phone }}</td>
+                <td>{{ u.specialty }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('edit_user', user_id=u.id) }}" style="display:inline;">
+                        <button class="btn btn-primary btn-sm">Edit</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('delete_user', user_id=u.id) }}" style="display:inline;">
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- APPOINTMENTS TABLE -->
+    <h5>All Appointments</h5>
+    <table>
+      <thead>
+        <tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>{{ a.patient.name if a.patient else '' }}</td>
+          <td>{{ a.doctor.name if a.doctor else '' }}</td>
+          <td>{{ a.date }}</td>
+          <td>
+            {% if a.status == 'pending' %}
+              <span class="badge bg-warning">{{ a.status }}</span>
+            {% elif a.status == 'accepted' %}
+              <span class="badge bg-success">{{ a.status }}</span>
+            {% elif a.status == 'rejected' %}
+              <span class="badge bg-danger">{{ a.status }}</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ a.status }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('delete_appointment', appt_id=a.id) }}" style="display:inline;">
+                <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this appointment?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- MESSAGES TABLE -->
+    <h5>Messages from Contact Page</h5>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for m in messages %}
+        <tr>
+          <td>{{ m.name }}</td>
+          <td>{{ m.email }}</td>
+          <td>{{ m.message }}</td>
+          <td>{{ m.date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="footer">
+        <p>&copy; 2025 MediLink. All rights reserved.</p>
+    </div>
+</div>
+
+<script>
+function openModal(){
+    document.getElementById('createUserModal').classList.add('active');
+}
+function closeModal(){
+    document.getElementById('createUserModal').classList.remove('active');
+}
+function toggleSpecialty(role){
+    if(role === 'doctor'){
+        document.getElementById('specialtyInput').style.display = 'block';
+        document.getElementById('specialtyLabel').style.display = 'block';
+    } else {
+        document.getElementById('specialtyInput').style.display = 'none';
+        document.getElementById('specialtyLabel').style.display = 'none';
+    }
+}
+</script>
+
+</body>
+</html>

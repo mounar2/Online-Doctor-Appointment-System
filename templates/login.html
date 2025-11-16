@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediLink - Login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='cardiogram.png') }}">
+<style>
+:root {
+    --primary:#2563eb;
+    --primary-dark:#7c3aed; /* أزرق بنفسجي */
+    --secondary:#64748b;
+    --dark:#1e293b;
+    --light:#f8fafc;
+    --gray:#e2e8f0;
+    --card-shadow:0 10px 25px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+body{
+    background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);
+    min-height:100vh;
+    color:var(--dark);
+}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;margin-bottom:50px;}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.8rem;font-weight:700;color:var(--primary);}
+.logo i{font-size:2.2rem;}
+.nav-links{display:flex;gap:25px;}
+.nav-links a{text-decoration:none;color:var(--dark);font-weight:500;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:2px;background:var(--primary);transition:width 0.3s;}
+.nav-links a:hover::after{width:100%;}
+
+/* Hero */
+.hero{
+    text-align:center;
+    padding:100px 20px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:white;
+    border-radius:20px;
+    box-shadow:var(--card-shadow);
+    margin-bottom:50px;
+}
+.hero h1{font-size:3rem;margin-bottom:15px;}
+.hero p{font-size:1.2rem;opacity:0.9;margin-bottom:50px;}
+
+/* Login Card */
+.login-card{
+    background:white;
+    max-width:400px;
+    margin:0 auto;
+    padding:40px 30px;
+    border-radius:20px;
+    box-shadow:var(--card-shadow);
+    transition:transform 0.3s ease;
+}
+.login-card:hover{transform:translateY(-5px);}
+.login-card input{
+    width:100%;
+    padding:14px;
+    margin-bottom:20px;
+    border:1px solid var(--gray);
+    border-radius:10px;
+    font-size:1rem;
+}
+.btn-primary{
+    background:var(--primary);
+    color:white;
+    border:none;
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    font-size:1.1rem;
+    cursor:pointer;
+    transition:0.3s;
+}
+.btn-primary i{margin-right:8px;}
+.btn-primary:hover{background:var(--primary-dark); transform:translateY(-2px);}
+
+/* Footer */
+.footer{text-align:center;padding:40px 20px;margin-top:60px;border-top:1px solid var(--gray);color:var(--secondary);}
+.footer-links{display:flex;justify-content:center;gap:20px;margin:20px 0;}
+.footer-links a{color:var(--secondary);text-decoration:none;}
+.footer-links a:hover{color:var(--primary);}
+
+/* Responsive */
+@media(max-width:768px){
+    .header{flex-direction:column;gap:20px;}
+    .nav-links{gap:15px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo"><i class="fas fa-heartbeat"></i> MediLink</div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('about_page') }}">About</a>
+            <a href="{{ url_for('contact_page') }}">Contact</a>
+            <a href="{{ url_for('register_page') }}">Register</a>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Welcome Back!</h1>
+        <p>Login to manage your appointments easily.</p>
+
+        <!-- Login Form Card -->
+        <div class="login-card">
+            <form method="POST">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </form>
+            <p style="margin-top:15px; text-align:center;">
+                Don't have an account? <a href="{{ url_for('register_page') }}" style="color:var(--primary); text-decoration:underline;">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="logo"><i class="fas fa-heartbeat"></i> MediLink</div>
+        <p>Your trusted partner in healthcare management</p>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms</a>
+            <a href="#contact">Contact</a>
+            <a href="#">Help</a>
+        </div>
+        <p>&copy; 2025 MediLink. All rights reserved.</p>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+ 
+ 
+ 
+ 

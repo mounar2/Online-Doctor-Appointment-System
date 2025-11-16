@@ -1,0 +1,10 @@
+[
+    {
+        "id": "edf78765-db32-4a4d-b83b-aa87defe374e",
+        "patient_id": "d1106836-cfd4-4ac2-8255-77dcf3641d72",
+        "doctor_id": "3bd5aa65-dd4e-4aef-96dd-d6ed041f6b76",
+        "date": "2025-11-16T12:04",
+        "reason": "",
+        "status": "accepted"
+    }
+]
